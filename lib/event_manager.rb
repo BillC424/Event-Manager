@@ -12,7 +12,7 @@ def first_num_test(phone_number)
   number.delete_at(0) if phone_num_length == 11 && phone_number.to_s.split(//)[0] == '1' 
   number = number.join.to_i if number.length == 10
   if phone_number.to_s.split('')[0] != '1' && phone_num_length == 11
-    puts 'bad' 
+    return 
   else
     return number 
   end
@@ -21,8 +21,8 @@ end
 def clean_phone_number(phone_number)
     phone_num_length = phone_number.to_s.length
     case phone_num_length
-      when 0..9, 12.. then puts 'bad phone number'
-      when 10 then puts 'good'
+      when 0..9, 12.. then return
+      when 10 then return phone_number
     end
     first_num_test(phone_number)
 end
@@ -67,6 +67,7 @@ contents.each do |row|
   id = row[0]
   name = row[:first_name]
   zipcode = clean_zipcode(row[:zipcode])
+  phone = clean_phone_number(row[:homephone])
   legislators = legislators_by_zipcode(zipcode)
 
   form_letter = erb_template.result(binding)
