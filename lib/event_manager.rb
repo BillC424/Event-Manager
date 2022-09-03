@@ -1,6 +1,7 @@
 require 'csv'
 require 'google/apis/civicinfo_v2'
 require 'erb'
+require 'time'
 
 def clean_zipcode(zipcode)
   zipcode.to_s.rjust(5,"0")[0..4]
@@ -42,6 +43,7 @@ def legislators_by_zipcode(zip)
   end
 end
 
+
 def save_thank_you_letter(id,form_letter)
   Dir.mkdir('output') unless Dir.exist?('output')
 
@@ -59,7 +61,7 @@ contents = CSV.open(
   headers: true,
   header_converters: :symbol
 )
-
+=begin
 template_letter = File.read('form_letter.erb')
 erb_template = ERB.new template_letter
 
@@ -73,4 +75,25 @@ contents.each do |row|
   form_letter = erb_template.result(binding)
 
   save_thank_you_letter(id,form_letter)
+=end
+
+def registration_hour(reg_date)
+  date_time = Time.strptime(reg_date.to_s, '%m/%d/%y %k:%M').hour
 end
+
+def highest_hour(totals_array)
+    totals = totals_array.tally
+    most_frequent_hour = totals.max_by{|key, value| value }
+    puts "#{most_frequent_hour[0]} was the hour with the most registrations"
+end
+
+def count_hours(file)
+  totals = []
+  file.each do |row|
+    totals.push(registration_hour(row[:regdate]))
+  end
+  highest_hour(totals)
+end
+
+count_hours(contents)
+
