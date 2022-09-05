@@ -31,6 +31,44 @@ def clean_phone_number(phone_number)
   first_num_test(phone_number)
 end
 
+def registration_hour(reg_date)
+  date_time = Time.strptime(reg_date.to_s, '%m/%d/%y %k:%M').hour
+end
+  
+def registration_day(reg_date)
+  date_time = Date.strptime(reg_date.to_s, '%m/%d/%y').wday
+end
+  
+def highest_day(totals_array)
+  totals = totals_array.tally
+  most_frequent = totals.max_by { |_key, value| value }.to_a
+  most_frequent = most_frequent[0]
+  puts "#{Date::DAYNAMES[most_frequent]} was the day with the most registrations"
+end
+  
+def highest_hour(totals_array)
+  totals = totals_array.tally
+  most_frequent = totals.max_by { |_key, value| value }.to_a
+  most_frequent = most_frequent[0]
+  puts "#{most_frequent} was the hour with the most registrations"
+end
+  
+def count_hours(file)
+  totals = []
+  file.each do |row|
+    totals.push(registration_hour(row[:regdate]))
+  end
+  highest_hour(totals)
+end
+  
+def count_days(file)
+  totals = []
+  file.each do |row|
+    totals.push(registration_day(row[:regdate]))
+  end
+  highest_day(totals)
+end
+
 def legislators_by_zipcode(zip)
   civic_info = Google::Apis::CivicinfoV2::CivicInfoService.new
   civic_info.key = 'AIzaSyClRzDqDh5MsXwnCWi0kOiiBivP6JsSyBw'
@@ -76,41 +114,3 @@ contents = CSV.open(
 #   form_letter = erb_template.result(binding)
 #
 #   save_thank_you_letter(id,form_letter)
-
-def registration_hour(reg_date)
-  date_time = Time.strptime(reg_date.to_s, '%m/%d/%y %k:%M').hour
-end
-
-def registration_day(reg_date)
-  date_time = Date.strptime(reg_date.to_s, '%m/%d/%y').wday
-end
-
-def highest_day(totals_array)
-  totals = totals_array.tally
-  most_frequent = totals.max_by { |_key, value| value }.to_a
-  most_frequent = most_frequent[0]
-  puts "#{Date::DAYNAMES[most_frequent]} was the day with the most registrations"
-end
-
-def highest_hour(totals_array)
-  totals = totals_array.tally
-  most_frequent = totals.max_by { |_key, value| value }.to_a
-  most_frequent = most_frequent[0]
-  puts "#{most_frequent} was the hour with the most registrations"
-end
-
-def count_hours(file)
-  totals = []
-  file.each do |row|
-    totals.push(registration_hour(row[:regdate]))
-  end
-  highest_hour(totals)
-end
-
-def count_days(file)
-  totals = []
-  file.each do |row|
-    totals.push(registration_day(row[:regdate]))
-  end
-  highest_day(totals)
-end
