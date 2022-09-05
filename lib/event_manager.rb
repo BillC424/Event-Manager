@@ -1,6 +1,7 @@
 require 'csv'
 require 'google/apis/civicinfo_v2'
 require 'erb'
+require 'date'
 require 'time'
 
 def clean_zipcode(zipcode)
@@ -81,10 +82,22 @@ def registration_hour(reg_date)
   date_time = Time.strptime(reg_date.to_s, '%m/%d/%y %k:%M').hour
 end
 
+def registration_day(reg_date)
+  date_time = Date.strptime(reg_date.to_s, '%m/%d/%y').wday
+end
+
+def highest_day(totals_array)
+  totals = totals_array.tally
+  most_frequent = totals.max_by{|key, value| value }.to_a
+  most_frequent = most_frequent[0]
+  puts "#{Date::DAYNAMES[most_frequent]} was the day with the most registrations"
+end
+
 def highest_hour(totals_array)
     totals = totals_array.tally
-    most_frequent_hour = totals.max_by{|key, value| value }
-    puts "#{most_frequent_hour[0]} was the hour with the most registrations"
+    most_frequent = totals.max_by{|key, value| value }.to_a
+    most_frequent = most_frequent[0]
+    puts "#{most_frequent} was the hour with the most registrations"
 end
 
 def count_hours(file)
@@ -95,5 +108,18 @@ def count_hours(file)
   highest_hour(totals)
 end
 
-count_hours(contents)
+def count_days(file)
+  totals = []
+  file.each do |row|
+    totals.push(registration_day(row[:regdate]))
+  end
+  highest_day(totals)
+end
+
+
+
+
+
+
+
 
